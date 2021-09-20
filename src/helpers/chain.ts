@@ -14,7 +14,7 @@ export interface TransferForeign<Signer, ForeignAddr, Balance, Tx, EventIdent> {
     chain_nonce: number,
     to: ForeignAddr,
     value: Balance
-  ): Promise<[Tx, EventIdent]>;
+  ): Promise<[Tx, EventIdent]>
 }
 
 /**
@@ -33,7 +33,7 @@ export interface UnfreezeForeign<Signer, ForeignAddr, Balance, Tx, EventIdent> {
     chain_nonce: number,
     to: ForeignAddr,
     value: Balance
-  ): Promise<[Tx, EventIdent]>;
+  ): Promise<[Tx, EventIdent]>
 }
 
 /**
@@ -58,7 +58,7 @@ export interface TransferNftForeign<
     chain_nonce: number,
     to: ForeignAddr,
     id: NftIdent
-  ): Promise<[Tx, EventIdent]>;
+  ): Promise<[Tx, EventIdent]>
 }
 
 /**
@@ -82,14 +82,14 @@ export interface UnfreezeForeignNft<
     sender: Signer,
     to: ForeignAddr,
     id: NftIdent
-  ): Promise<[Tx, EventIdent]>;
+  ): Promise<[Tx, EventIdent]>
 }
 
 /**
  * Get the balance of an address on the chain
  */
 export interface BalanceCheck<Addr, Balance> {
-  balance(address: Addr): Promise<Balance>;
+  balance(address: Addr): Promise<Balance>
 }
 
 /**
@@ -99,7 +99,7 @@ export interface BalanceCheck<Addr, Balance> {
  * @param chain_nonce  nonce of the foreign chain
  */
 export interface WrappedBalanceCheck<Addr, Balance> {
-  balanceWrapped(address: Addr, chain_nonce: number): Promise<Balance>;
+  balanceWrapped(address: Addr, chain_nonce: number): Promise<Balance>
 }
 
 /**
@@ -112,7 +112,7 @@ export interface BatchWrappedBalanceCheck<Addr, Balance> {
   balanceWrappedBatch(
     address: Addr,
     chain_nonces: number[]
-  ): Promise<Map<number, Balance>>;
+  ): Promise<Map<number, Balance>>
 }
 
 /**
@@ -121,36 +121,36 @@ export interface BatchWrappedBalanceCheck<Addr, Balance> {
  * @param options Arguments required to mint the nft
  */
 export interface MintNft<Signer, Args, Identifier> {
-  mintNft(owner: Signer, options: Args): Promise<Identifier>;
+  mintNft(owner: Signer, options: Args): Promise<Identifier>
 }
 
 /**
  * Get the list of NFTs for a given account
  */
 export interface ListNft<Addr, K, V> {
-  listNft(owner: Addr): Promise<Map<K, V>>;
+  listNft(owner: Addr): Promise<Map<K, V>>
 }
 
 /**
  * Get the original data of a locked NFT (uri, name, etc)
  */
 export interface GetLockedNft<Ident, Info> {
-  getLockedNft(ident: Ident): Promise<Info | undefined>;
+  getLockedNft(ident: Ident): Promise<Info | undefined>
 }
 
 export type WrappedNft = {
-  chain_nonce: number;
-  data: Uint8Array;
-};
+  chain_nonce: number
+  data: Uint8Array
+}
 
 export interface DecodeWrappedNft<Data> {
-  decodeWrappedNft(raw_data: Data): WrappedNft;
+  decodeWrappedNft(raw_data: Data): WrappedNft
 }
 
 export interface DecodeRawNft {
-  decodeUrlFromRaw(data: Uint8Array): Promise<string>;
+  decodeUrlFromRaw(data: Uint8Array): Promise<string>
 }
 
 export function ConcurrentSendError(): Error {
-  return new Error("concurrent_send");
+  return new Error('concurrent_send')
 }

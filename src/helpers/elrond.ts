@@ -21,9 +21,9 @@ import {
   TransactionHash,
   TransactionPayload,
   U64Value,
-} from "@elrondnetwork/erdjs";
-import axios from "axios";
-import BigNumber from "bignumber.js";
+} from '@elrondnetwork/erdjs'
+import axios from 'axios'
+import BigNumber from 'bignumber.js'
 import {
   BalanceCheck,
   BatchWrappedBalanceCheck,
@@ -38,68 +38,68 @@ import {
   UnfreezeForeign,
   UnfreezeForeignNft,
   WrappedNft,
-} from "./chain";
-import { Base64 } from "js-base64";
+} from './chain'
+import { Base64 } from 'js-base64'
 
-type EasyBalance = string | number | BigNumber;
+type EasyBalance = string | number | BigNumber
 
 const ESDT_ISSUE_ADDR = new Address(
-  "erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzllls8a5w6u"
-);
-const ESDT_ISSUE_COST = "50000000000000000";
+  'erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzllls8a5w6u'
+)
+const ESDT_ISSUE_COST = '50000000000000000'
 
 /**
  * Information required to perform NFT transfers in this chain
  */
 export type NftInfo = {
-  token: string;
-  nonce: EasyBalance;
-};
+  token: string
+  nonce: EasyBalance
+}
 
 type ContractRes = {
-  readonly [idx: string]: number | string;
-};
+  readonly [idx: string]: number | string
+}
 
 /**
  * Information associated with an ESDT Token
  */
 export type EsdtTokenInfo = {
-  readonly balance: string;
-  readonly tokenIdentifier: string;
-};
+  readonly balance: string
+  readonly tokenIdentifier: string
+}
 
 type BEsdtNftInfo = {
-  readonly attributes?: string;
-  readonly creator: string;
-  readonly name: string;
-  readonly nonce: number;
-  readonly royalties: string;
-  readonly uris: string[];
-};
+  readonly attributes?: string
+  readonly creator: string
+  readonly name: string
+  readonly nonce: number
+  readonly royalties: string
+  readonly uris: string[]
+}
 
-type MaybeEsdtNftInfo = EsdtTokenInfo & (BEsdtNftInfo | undefined);
+type MaybeEsdtNftInfo = EsdtTokenInfo & (BEsdtNftInfo | undefined)
 
 /**
  * Information associated with an ESDT NFT
  */
-export type EsdtNftInfo = EsdtTokenInfo & BEsdtNftInfo;
+export type EsdtNftInfo = EsdtTokenInfo & BEsdtNftInfo
 
 function isEsdtNftInfo(maybe: MaybeEsdtNftInfo): maybe is EsdtNftInfo {
-  return maybe.creator != undefined && maybe.balance == "1";
+  return maybe.creator != undefined && maybe.balance == '1'
 }
 
 /**
  * arguments required to issue an NFT
  */
 export type NftIssueArgs = {
-  readonly identifier: string;
-  readonly quantity: number | undefined;
-  readonly name: string;
-  readonly royalties: number | undefined;
-  readonly hash: string | undefined;
-  readonly attrs: string | undefined;
-  readonly uris: Array<string>;
-};
+  readonly identifier: string
+  readonly quantity: number | undefined
+  readonly name: string
+  readonly royalties: number | undefined
+  readonly hash: string | undefined
+  readonly attrs: string | undefined
+  readonly uris: Array<string>
+}
 
 /**
  * Utility for issuing ESDT which supports NFT minting
@@ -114,7 +114,7 @@ export interface IssueESDTNFT {
     canFreeze: boolean | undefined,
     canWipe: boolean | undefined,
     canTransferNFTCreateRole: boolean | undefined
-  ): Transaction;
+  ): Transaction
 
   /**
    * Issue a new ESDT supporting NFTs
@@ -133,7 +133,7 @@ export interface IssueESDTNFT {
     canFreeze: boolean | undefined,
     canWipe: boolean | undefined,
     canTransferNFTCreateRole: boolean | undefined
-  ): Promise<void>;
+  ): Promise<void>
 }
 
 /**
@@ -144,9 +144,9 @@ export interface IssueESDTNFT {
  * ESDTRoleNFTAddQuanitity: Allowing minting >1 NFTs (SFT)
  */
 export type ESDTRole =
-  | "ESDTRoleNFTCreate"
-  | "ESDTRoleNFTBurn"
-  | "ESDTRoleNFTAddQuantity";
+  | 'ESDTRoleNFTCreate'
+  | 'ESDTRoleNFTBurn'
+  | 'ESDTRoleNFTAddQuantity'
 
 /**
  * Utility for setting ESDT roles
@@ -159,7 +159,7 @@ export interface SetESDTRoles {
     token: string,
     target: Address,
     roles: [ESDTRole]
-  ): Transaction;
+  ): Transaction
 
   /**
    *
@@ -169,13 +169,13 @@ export interface SetESDTRoles {
    * @param token  ESDT Identifier
    * @param roles  Roles to set
    */
-  setESDTRole(sender: ISigner, token: string, roles: [ESDTRole]): Promise<void>;
+  setESDTRole(sender: ISigner, token: string, roles: [ESDTRole]): Promise<void>
 }
 
 /**
  * Identifier for tracking a given action
  */
-type EventIdent = number;
+type EventIdent = number
 
 /**
  * Traits implemented by this module
@@ -199,7 +199,7 @@ export type ElrondHelper = BalanceCheck<string | Address, BigNumber> &
       chain_nonce: number,
       to: string,
       value: EasyBalance
-    ): Transaction;
+    ): Transaction
     /**
      * Unsigned Transaction for [[UnfreezeForeign]]
      */
@@ -208,7 +208,7 @@ export type ElrondHelper = BalanceCheck<string | Address, BigNumber> &
       address: Address,
       to: string,
       value: EasyBalance
-    ): Transaction;
+    ): Transaction
     /**
      * Unsigned Transaction for [[TransferNftForeign]]
      */
@@ -217,7 +217,7 @@ export type ElrondHelper = BalanceCheck<string | Address, BigNumber> &
       address: Address,
       to: string,
       info: NftInfo
-    ): Transaction;
+    ): Transaction
     /**
      * Unsigned Transaction for [[UnfreezeForeignNft]]
      */
@@ -225,18 +225,18 @@ export type ElrondHelper = BalanceCheck<string | Address, BigNumber> &
       address: Address,
       to: string,
       id: number
-    ): Transaction;
+    ): Transaction
     /**
      * Unsigned transaction for Minting an NFT
      */
-    unsignedMintNftTxn(owner: Address, args: NftIssueArgs): Transaction;
+    unsignedMintNftTxn(owner: Address, args: NftIssueArgs): Transaction
     /**
      * Raw result of a transaction
      *
      * @param tx_hash  Hash of the transaction
      */
-    rawTxnResult(tx_hash: TransactionHash): Promise<Object>; // TODO: Typed transaction result
-  };
+    rawTxnResult(tx_hash: TransactionHash): Promise<Object> // TODO: Typed transaction result
+  }
 
 /**
  * Create an object implementing cross chain utilities for elrond
@@ -258,73 +258,73 @@ export const elrondHelperFactory: (
   esdt: string,
   esdt_nft: string
 ) => {
-  const provider = new ProxyProvider(node_uri);
-  await NetworkConfig.getDefault().sync(provider);
-  const mintContract = new Address(minter_address);
+  const provider = new ProxyProvider(node_uri)
+  await NetworkConfig.getDefault().sync(provider)
+  const mintContract = new Address(minter_address)
   const providerRest = axios.create({
     baseURL: node_uri,
-  });
-  const esdtHex = Buffer.from(esdt, "utf-8");
-  const esdtNftHex = Buffer.from(esdt_nft, "utf-8");
-  const decoder = new TextDecoder();
+  })
+  const esdtHex = Buffer.from(esdt, 'utf-8')
+  const esdtNftHex = Buffer.from(esdt_nft, 'utf-8')
+  const decoder = new TextDecoder()
 
   const syncAccount = async (signer: ISigner) => {
-    const account = new Account(signer.getAddress());
-    await account.sync(provider);
+    const account = new Account(signer.getAddress())
+    await account.sync(provider)
 
-    return account;
-  };
+    return account
+  }
 
   const signAndSend = async (signer: ISigner, tx: Transaction) => {
-    const acc = await syncAccount(signer);
+    const acc = await syncAccount(signer)
 
-    tx.setNonce(acc.nonce);
-    await signer.sign(tx);
+    tx.setNonce(acc.nonce)
+    await signer.sign(tx)
 
     try {
-      await tx.send(provider);
+      await tx.send(provider)
     } catch (e) {
-      if (e.message.includes("lowerNonceInTx")) {
-        throw ConcurrentSendError();
+      if (e.message.includes('lowerNonceInTx')) {
+        throw ConcurrentSendError()
       } else {
-        throw e;
+        throw e
       }
     }
-    return tx;
-  };
+    return tx
+  }
 
   const transactionResult = async (tx_hash: TransactionHash) => {
-    const uri = `/transaction/${tx_hash.toString()}?withResults=true`;
-    let tries = 0;
+    const uri = `/transaction/${tx_hash.toString()}?withResults=true`
+    let tries = 0
 
     while (tries < 10) {
-      tries += 1;
-      let err;
+      tries += 1
+      let err
       // TODO: type safety
-      const res = await providerRest.get(uri).catch((e) => (err = e));
+      const res = await providerRest.get(uri).catch((e) => (err = e))
       if (err) {
-        await new Promise((r) => setTimeout(r, 3000));
-        continue;
+        await new Promise((r) => setTimeout(r, 3000))
+        continue
       }
-      const data = res.data;
-      if (data["code"] != "successful") {
-        throw Error("failed to execute txn");
-      }
-
-      const tx_info = data["data"]["transaction"];
-      if (tx_info["status"] == "pending") {
-        await new Promise((r) => setTimeout(r, 5000));
-        continue;
-      }
-      if (tx_info["status"] != "success") {
-        throw Error("failed to execute txn");
+      const data = res.data
+      if (data['code'] != 'successful') {
+        throw Error('failed to execute txn')
       }
 
-      return tx_info;
+      const tx_info = data['data']['transaction']
+      if (tx_info['status'] == 'pending') {
+        await new Promise((r) => setTimeout(r, 5000))
+        continue
+      }
+      if (tx_info['status'] != 'success') {
+        throw Error('failed to execute txn')
+      }
+
+      return tx_info
     }
 
-    throw Error(`failed to query transaction exceeded 10 retries ${tx_hash}`);
-  };
+    throw Error(`failed to query transaction exceeded 10 retries ${tx_hash}`)
+  }
 
   const unsignedTransferTxn = (
     chain_nonce: number,
@@ -336,40 +336,40 @@ export const elrondHelperFactory: (
       gasLimit: new GasLimit(50000000),
       value: new Balance(value.toString()),
       data: TransactionPayload.contractCall()
-        .setFunction(new ContractFunction("freezeSend"))
+        .setFunction(new ContractFunction('freezeSend'))
         .addArg(new U64Value(new BigNumber(chain_nonce)))
-        .addArg(new BytesValue(Buffer.from(to, "ascii")))
+        .addArg(new BytesValue(Buffer.from(to, 'ascii')))
         .build(),
-    });
-  };
+    })
+  }
 
   const unsignedMintNftTxn = (
     owner: Address,
     { identifier, quantity, name, royalties, hash, attrs, uris }: NftIssueArgs
   ) => {
     let baseArgs = TransactionPayload.contractCall()
-      .setFunction(new ContractFunction("ESDTNFTCreate"))
-      .addArg(new TokenIdentifierValue(Buffer.from(identifier, "utf-8")))
+      .setFunction(new ContractFunction('ESDTNFTCreate'))
+      .addArg(new TokenIdentifierValue(Buffer.from(identifier, 'utf-8')))
       .addArg(new BigUIntValue(new BigNumber(quantity ?? 1)))
-      .addArg(new BytesValue(Buffer.from(name, "utf-8")))
+      .addArg(new BytesValue(Buffer.from(name, 'utf-8')))
       .addArg(new U64Value(new BigNumber(royalties ?? 0)))
       .addArg(
-        new BytesValue(hash ? Buffer.from(hash, "utf-8") : Buffer.alloc(0))
+        new BytesValue(hash ? Buffer.from(hash, 'utf-8') : Buffer.alloc(0))
       )
       .addArg(
-        new BytesValue(attrs ? Buffer.from(attrs, "utf-8") : Buffer.alloc(0))
-      );
+        new BytesValue(attrs ? Buffer.from(attrs, 'utf-8') : Buffer.alloc(0))
+      )
 
     for (const uri of uris) {
-      baseArgs = baseArgs.addArg(new BytesValue(Buffer.from(uri, "utf-8")));
+      baseArgs = baseArgs.addArg(new BytesValue(Buffer.from(uri, 'utf-8')))
     }
 
     return new Transaction({
       receiver: owner,
       gasLimit: new GasLimit(70000000), // TODO: Auto derive
       data: baseArgs.build(),
-    });
-  };
+    })
+  }
 
   const unsignedTransferNftTxn = (
     chain_nonce: number,
@@ -381,33 +381,33 @@ export const elrondHelperFactory: (
       receiver: address,
       gasLimit: new GasLimit(70000000),
       data: TransactionPayload.contractCall()
-        .setFunction(new ContractFunction("ESDTNFTTransfer"))
-        .addArg(new TokenIdentifierValue(Buffer.from(token, "utf-8")))
+        .setFunction(new ContractFunction('ESDTNFTTransfer'))
+        .addArg(new TokenIdentifierValue(Buffer.from(token, 'utf-8')))
         .addArg(new U64Value(new BigNumber(nonce)))
         .addArg(new BigUIntValue(new BigNumber(1)))
         .addArg(new AddressValue(mintContract))
-        .addArg(new BytesValue(Buffer.from("freezeSendNft", "ascii")))
+        .addArg(new BytesValue(Buffer.from('freezeSendNft', 'ascii')))
         .addArg(new U64Value(new BigNumber(chain_nonce)))
-        .addArg(new BytesValue(Buffer.from(to, "ascii")))
+        .addArg(new BytesValue(Buffer.from(to, 'ascii')))
         .build(),
-    });
-  };
+    })
+  }
 
   const unsignedUnfreezeNftTxn = (address: Address, to: string, id: number) => {
     return new Transaction({
       receiver: address,
       gasLimit: new GasLimit(70000000),
       data: TransactionPayload.contractCall()
-        .setFunction(new ContractFunction("ESDTNFTTransfer"))
+        .setFunction(new ContractFunction('ESDTNFTTransfer'))
         .addArg(new TokenIdentifierValue(esdtNftHex))
         .addArg(new U64Value(new BigNumber(id)))
         .addArg(new BigUIntValue(new BigNumber(1)))
         .addArg(new AddressValue(mintContract))
-        .addArg(new BytesValue(Buffer.from("withdrawNft", "ascii")))
-        .addArg(new BytesValue(Buffer.from(to, "ascii")))
+        .addArg(new BytesValue(Buffer.from('withdrawNft', 'ascii')))
+        .addArg(new BytesValue(Buffer.from(to, 'ascii')))
         .build(),
-    });
-  };
+    })
+  }
 
   const unsignedUnfreezeTxn = (
     chain_nonce: number,
@@ -419,42 +419,42 @@ export const elrondHelperFactory: (
       receiver: address,
       gasLimit: new GasLimit(50000000),
       data: TransactionPayload.contractCall()
-        .setFunction(new ContractFunction("ESDTNFTTransfer"))
+        .setFunction(new ContractFunction('ESDTNFTTransfer'))
         .addArg(new TokenIdentifierValue(esdtHex))
         .addArg(new U64Value(new BigNumber(chain_nonce)))
         .addArg(new BigUIntValue(new BigNumber(value)))
         .addArg(new AddressValue(mintContract))
-        .addArg(new BytesValue(Buffer.from("withdraw", "ascii")))
-        .addArg(new BytesValue(Buffer.from(to, "ascii")))
+        .addArg(new BytesValue(Buffer.from('withdraw', 'ascii')))
+        .addArg(new BytesValue(Buffer.from(to, 'ascii')))
         .build(),
-    });
-  };
+    })
+  }
 
   const listEsdt = async (owner: string) => {
-    const raw = await providerRest(`/address/${owner}/esdt`);
-    const dat = raw.data.data.esdts as { [index: string]: MaybeEsdtNftInfo };
+    const raw = await providerRest(`/address/${owner}/esdt`)
+    const dat = raw.data.data.esdts as { [index: string]: MaybeEsdtNftInfo }
 
-    return dat;
-  };
+    return dat
+  }
 
   async function listNft(owner: string): Promise<Map<string, EsdtNftInfo>> {
     const ents: [string, MaybeEsdtNftInfo][] = Object.entries(
       await listEsdt(owner)
-    );
+    )
 
     const fmapCb: (
       tok: [string, MaybeEsdtNftInfo]
     ) => [] | [[string, EsdtNftInfo]] = ([tok, info]) => {
       if (!isEsdtNftInfo(info)) {
-        return [];
+        return []
       }
 
-      let sp = tok.split("-");
-      let nonce = sp.pop() ?? "";
-      return [[`${sp.join("-")}-${parseInt(nonce, 16).toString()}`, info]];
-    };
+      let sp = tok.split('-')
+      let nonce = sp.pop() ?? ''
+      return [[`${sp.join('-')}-${parseInt(nonce, 16).toString()}`, info]]
+    }
 
-    return new Map(ents.flatMap(fmapCb));
+    return new Map(ents.flatMap(fmapCb))
   }
 
   const unsignedIssueESDTNft = (
@@ -465,34 +465,34 @@ export const elrondHelperFactory: (
     canTransferNFTCreateRole: boolean | undefined
   ) => {
     let baseArgs = TransactionPayload.contractCall()
-      .setFunction(new ContractFunction("issueNonFungible"))
-      .addArg(new TokenIdentifierValue(Buffer.from(name, "utf-8")))
-      .addArg(new TokenIdentifierValue(Buffer.from(ticker, "utf-8")));
+      .setFunction(new ContractFunction('issueNonFungible'))
+      .addArg(new TokenIdentifierValue(Buffer.from(name, 'utf-8')))
+      .addArg(new TokenIdentifierValue(Buffer.from(ticker, 'utf-8')))
 
     if (canFreeze !== undefined) {
       baseArgs = baseArgs
-        .addArg(new BytesValue(Buffer.from("canFreeze", "ascii")))
+        .addArg(new BytesValue(Buffer.from('canFreeze', 'ascii')))
         .addArg(
-          new BytesValue(Buffer.from(canFreeze ? "true" : "false", "ascii"))
-        );
+          new BytesValue(Buffer.from(canFreeze ? 'true' : 'false', 'ascii'))
+        )
     }
     if (canWipe !== undefined) {
       baseArgs = baseArgs
-        .addArg(new BytesValue(Buffer.from("canWipe", "ascii")))
+        .addArg(new BytesValue(Buffer.from('canWipe', 'ascii')))
         .addArg(
-          new BytesValue(Buffer.from(canWipe ? "true" : "false", "ascii"))
-        );
+          new BytesValue(Buffer.from(canWipe ? 'true' : 'false', 'ascii'))
+        )
     }
     if (canTransferNFTCreateRole !== undefined) {
       baseArgs = baseArgs
         .addArg(
-          new BytesValue(Buffer.from("canTransferNFTCreateRole", "ascii"))
+          new BytesValue(Buffer.from('canTransferNFTCreateRole', 'ascii'))
         )
         .addArg(
           new BytesValue(
-            Buffer.from(canTransferNFTCreateRole ? "true" : "false", "ascii")
+            Buffer.from(canTransferNFTCreateRole ? 'true' : 'false', 'ascii')
           )
-        );
+        )
     }
 
     return new Transaction({
@@ -500,8 +500,8 @@ export const elrondHelperFactory: (
       value: new Balance(ESDT_ISSUE_COST),
       gasLimit: new GasLimit(60000000),
       data: baseArgs.build(),
-    });
-  };
+    })
+  }
 
   const unsignedSetESDTRoles = (
     token: string,
@@ -509,65 +509,65 @@ export const elrondHelperFactory: (
     roles: [ESDTRole]
   ) => {
     let baseArgs = TransactionPayload.contractCall()
-      .setFunction(new ContractFunction("setSpecialRole"))
+      .setFunction(new ContractFunction('setSpecialRole'))
       .addArg(new TokenIdentifierValue(Buffer.from(token)))
-      .addArg(new AddressValue(target));
+      .addArg(new AddressValue(target))
 
     for (const role of roles) {
-      baseArgs = baseArgs.addArg(new BytesValue(Buffer.from(role, "utf-8")));
+      baseArgs = baseArgs.addArg(new BytesValue(Buffer.from(role, 'utf-8')))
     }
 
     return new Transaction({
       receiver: ESDT_ISSUE_ADDR,
       gasLimit: new GasLimit(70000000), // TODO: auto derive
       data: baseArgs.build(),
-    });
-  };
+    })
+  }
 
   async function getLockedNft({
     token,
     nonce,
   }: NftInfo): Promise<EsdtNftInfo | undefined> {
-    const nfts = await listNft(minter_address);
-    return nfts.get(`${token}-${nonce.toString()}`);
+    const nfts = await listNft(minter_address)
+    return nfts.get(`${token}-${nonce.toString()}`)
   }
 
   const rawNftDecoder = (nftDat: Uint8Array) => {
     /// TokenLen(4 by), TokenIdent(TokenLen by), Nonce(8 by)
     /// BinaryCodec is broken for browsers. Decode manually :|
     if (nftDat.length < 12) {
-      throw Error("not a wrapped nft");
+      throw Error('not a wrapped nft')
     }
 
-    const tokenLen = new Uint32Array(nftDat.slice(0, 4).reverse())[0];
+    const tokenLen = new Uint32Array(nftDat.slice(0, 4).reverse())[0]
     if (nftDat.length !== 12 + tokenLen) {
-      throw Error("not a wrapped nft");
+      throw Error('not a wrapped nft')
     }
-    const token = decoder.decode(nftDat.slice(4, 4 + tokenLen));
+    const token = decoder.decode(nftDat.slice(4, 4 + tokenLen))
     // TODO: Consider LO
     // tfw js can't convert be bytes to u64
     const nonce = new Uint32Array(
       nftDat.slice(4 + tokenLen, 12 + tokenLen).reverse()
-    )[0];
+    )[0]
 
-    return { token, nonce };
-  };
+    return { token, nonce }
+  }
 
   async function extractId(
     tx: Transaction
   ): Promise<[Transaction, EventIdent]> {
-    let err;
-    await tx.awaitExecuted(provider).catch((e) => (err = e));
+    let err
+    await tx.awaitExecuted(provider).catch((e) => (err = e))
     if (err) {
-      await new Promise((r) => setTimeout(r, 3000));
-      return extractId(tx);
+      await new Promise((r) => setTimeout(r, 3000))
+      return extractId(tx)
     }
 
-    const txr = await transactionResult(tx.getHash());
+    const txr = await transactionResult(tx.getHash())
 
-    const id = filterEventId(txr["smartContractResults"]);
+    const id = filterEventId(txr['smartContractResults'])
 
-    return [tx, id];
+    return [tx, id]
   }
 
   return {
@@ -579,27 +579,27 @@ export const elrondHelperFactory: (
     unsignedMintNftTxn,
     unsignedSetESDTRoles,
     async balance(address: string | Address): Promise<BigNumber> {
-      const wallet = new Account(new Address(address));
+      const wallet = new Account(new Address(address))
 
-      await wallet.sync(provider);
+      await wallet.sync(provider)
 
-      return wallet.balance.valueOf();
+      return wallet.balance.valueOf()
     },
     async balanceWrappedBatch(
       address: string | Address,
       chain_nonces: number[]
     ): Promise<Map<number, BigNumber>> {
-      const esdts = Object.values(await listEsdt(address.toString()));
+      const esdts = Object.values(await listEsdt(address.toString()))
 
-      const res = new Map(chain_nonces.map((v) => [v, new BigNumber(0)]));
+      const res = new Map(chain_nonces.map((v) => [v, new BigNumber(0)]))
 
       for (const esdt of esdts) {
         esdt.nonce &&
           esdt.tokenIdentifier.startsWith(esdt.tokenIdentifier) &&
-          res.set(esdt.nonce, new BigNumber(esdt.balance));
+          res.set(esdt.nonce, new BigNumber(esdt.balance))
       }
 
-      return res;
+      return res
     },
     async transferNativeToForeign(
       sender: ISigner,
@@ -607,10 +607,10 @@ export const elrondHelperFactory: (
       to: string,
       value: EasyBalance
     ): Promise<[Transaction, EventIdent]> {
-      const txu = unsignedTransferTxn(chain_nonce, to, value);
-      const tx = await signAndSend(sender, txu);
+      const txu = unsignedTransferTxn(chain_nonce, to, value)
+      const tx = await signAndSend(sender, txu)
 
-      return await extractId(tx);
+      return await extractId(tx)
     },
     async unfreezeWrapped(
       sender: ISigner,
@@ -623,10 +623,10 @@ export const elrondHelperFactory: (
         sender.getAddress(),
         to,
         value
-      );
-      const tx = await signAndSend(sender, txu);
+      )
+      const tx = await signAndSend(sender, txu)
 
-      return await extractId(tx);
+      return await extractId(tx)
     },
     async transferNftToForeign(
       sender: ISigner,
@@ -639,20 +639,20 @@ export const elrondHelperFactory: (
         sender.getAddress(),
         to,
         info
-      );
-      const tx = await signAndSend(sender, txu);
+      )
+      const tx = await signAndSend(sender, txu)
 
-      return await extractId(tx);
+      return await extractId(tx)
     },
     async unfreezeWrappedNft(
       sender: ISigner,
       to: string,
       nonce: number
     ): Promise<[Transaction, EventIdent]> {
-      const txu = unsignedUnfreezeNftTxn(sender.getAddress(), to, nonce);
-      const tx = await signAndSend(sender, txu);
+      const txu = unsignedUnfreezeNftTxn(sender.getAddress(), to, nonce)
+      const tx = await signAndSend(sender, txu)
 
-      return await extractId(tx);
+      return await extractId(tx)
     },
     unsignedIssueESDTNft,
     async issueESDTNft(
@@ -669,14 +669,14 @@ export const elrondHelperFactory: (
         canFreeze,
         canWipe,
         canTransferNFTCreateRole
-      );
+      )
 
-      await signAndSend(sender, txu);
+      await signAndSend(sender, txu)
     },
     async mintNft(owner: ISigner, args: NftIssueArgs): Promise<void> {
-      const txu = unsignedMintNftTxn(owner.getAddress(), args);
+      const txu = unsignedMintNftTxn(owner.getAddress(), args)
 
-      await signAndSend(owner, txu);
+      await signAndSend(owner, txu)
     },
     listNft,
     getLockedNft,
@@ -686,49 +686,49 @@ export const elrondHelperFactory: (
       target: Address,
       roles: [ESDTRole]
     ): Promise<void> {
-      const txu = unsignedSetESDTRoles(token, target, roles);
+      const txu = unsignedSetESDTRoles(token, target, roles)
 
-      await signAndSend(manager, txu);
+      await signAndSend(manager, txu)
     },
     decodeWrappedNft(raw_data: EsdtNftInfo): WrappedNft {
       if (!raw_data.attributes) {
-        throw Error("can't decode chain nonce");
+        throw Error("can't decode chain nonce")
       }
       return {
         // TODO: CONSIDER ALL BE BYTES
         chain_nonce: Base64.toUint8Array(raw_data.attributes!!)[0],
         data: Base64.toUint8Array(raw_data.uris[0]),
-      };
+      }
     },
     async decodeUrlFromRaw(data: Uint8Array): Promise<string> {
-      const nft_info = rawNftDecoder(data);
-      const locked = await getLockedNft(nft_info);
+      const nft_info = rawNftDecoder(data)
+      const locked = await getLockedNft(nft_info)
 
       if (locked === undefined) {
-        throw Error("Not a wrapped nft");
+        throw Error('Not a wrapped nft')
       }
 
-      return Base64.atob(locked!.uris[0]);
+      return Base64.atob(locked!.uris[0])
     },
-  };
-};
+  }
+}
 
 function filterEventId(results: Array<ContractRes>): number {
   for (const res of results) {
-    if (res["nonce"] === 0) {
-      continue;
+    if (res['nonce'] === 0) {
+      continue
     }
-    const data = (res.data as string).split("@");
-    if (data[0] != "" || data[1] != "6f6b" || data.length != 3) {
-      continue;
+    const data = (res.data as string).split('@')
+    if (data[0] != '' || data[1] != '6f6b' || data.length != 3) {
+      continue
     }
 
     try {
-      return parseInt(data[2], 16);
+      return parseInt(data[2], 16)
     } catch (NumberFormatException) {
-      continue;
+      continue
     }
   }
 
-  throw Error(`invalid result: ${results.toString()}`);
+  throw Error(`invalid result: ${results.toString()}`)
 }

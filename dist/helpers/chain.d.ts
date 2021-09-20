@@ -9,7 +9,12 @@
  * @returns Transaction and the Identifier of this action to track the status
  */
 export interface TransferForeign<Signer, ForeignAddr, Balance, Tx, EventIdent> {
-    transferNativeToForeign(sender: Signer, chain_nonce: number, to: ForeignAddr, value: Balance): Promise<[Tx, EventIdent]>;
+  transferNativeToForeign(
+    sender: Signer,
+    chain_nonce: number,
+    to: ForeignAddr,
+    value: Balance
+  ): Promise<[Tx, EventIdent]>
 }
 /**
  * Unfreeze native liquidity existing on a foreign chain(Send back Liquidity)
@@ -22,7 +27,12 @@ export interface TransferForeign<Signer, ForeignAddr, Balance, Tx, EventIdent> {
  * @returns Transaction and the Identifier of this action to track the status
  */
 export interface UnfreezeForeign<Signer, ForeignAddr, Balance, Tx, EventIdent> {
-    unfreezeWrapped(sender: Signer, chain_nonce: number, to: ForeignAddr, value: Balance): Promise<[Tx, EventIdent]>;
+  unfreezeWrapped(
+    sender: Signer,
+    chain_nonce: number,
+    to: ForeignAddr,
+    value: Balance
+  ): Promise<[Tx, EventIdent]>
 }
 /**
  * Transfer NFT to a foreign chain, freezing the original one
@@ -34,8 +44,19 @@ export interface UnfreezeForeign<Signer, ForeignAddr, Balance, Tx, EventIdent> {
  *
  * @returns Transaction and the Identifier of this action to track the status
  */
-export interface TransferNftForeign<Signer, ForeignAddr, NftIdent, Tx, EventIdent> {
-    transferNftToForeign(sender: Signer, chain_nonce: number, to: ForeignAddr, id: NftIdent): Promise<[Tx, EventIdent]>;
+export interface TransferNftForeign<
+  Signer,
+  ForeignAddr,
+  NftIdent,
+  Tx,
+  EventIdent
+> {
+  transferNftToForeign(
+    sender: Signer,
+    chain_nonce: number,
+    to: ForeignAddr,
+    id: NftIdent
+  ): Promise<[Tx, EventIdent]>
 }
 /**
  * Unfreeze native NFT existing on a foreign chain(Send back NFT)
@@ -47,14 +68,24 @@ export interface TransferNftForeign<Signer, ForeignAddr, NftIdent, Tx, EventIden
  *
  * @returns Transaction and the Identifier of this action to track the status
  */
-export interface UnfreezeForeignNft<Signer, ForeignAddr, NftIdent, Tx, EventIdent> {
-    unfreezeWrappedNft(sender: Signer, to: ForeignAddr, id: NftIdent): Promise<[Tx, EventIdent]>;
+export interface UnfreezeForeignNft<
+  Signer,
+  ForeignAddr,
+  NftIdent,
+  Tx,
+  EventIdent
+> {
+  unfreezeWrappedNft(
+    sender: Signer,
+    to: ForeignAddr,
+    id: NftIdent
+  ): Promise<[Tx, EventIdent]>
 }
 /**
  * Get the balance of an address on the chain
  */
 export interface BalanceCheck<Addr, Balance> {
-    balance(address: Addr): Promise<Balance>;
+  balance(address: Addr): Promise<Balance>
 }
 /**
  * Get the balance of a foreign token for an account in this chain
@@ -63,7 +94,7 @@ export interface BalanceCheck<Addr, Balance> {
  * @param chain_nonce  nonce of the foreign chain
  */
 export interface WrappedBalanceCheck<Addr, Balance> {
-    balanceWrapped(address: Addr, chain_nonce: number): Promise<Balance>;
+  balanceWrapped(address: Addr, chain_nonce: number): Promise<Balance>
 }
 /**
  * Get the balance of multiple foreign tokens for an account in this chain
@@ -72,7 +103,10 @@ export interface WrappedBalanceCheck<Addr, Balance> {
  * @returns Mapping of chain_nonce to balance
  */
 export interface BatchWrappedBalanceCheck<Addr, Balance> {
-    balanceWrappedBatch(address: Addr, chain_nonces: number[]): Promise<Map<number, Balance>>;
+  balanceWrappedBatch(
+    address: Addr,
+    chain_nonces: number[]
+  ): Promise<Map<number, Balance>>
 }
 /**
  * Create a new NFT on this chain
@@ -80,28 +114,28 @@ export interface BatchWrappedBalanceCheck<Addr, Balance> {
  * @param options Arguments required to mint the nft
  */
 export interface MintNft<Signer, Args, Identifier> {
-    mintNft(owner: Signer, options: Args): Promise<Identifier>;
+  mintNft(owner: Signer, options: Args): Promise<Identifier>
 }
 /**
  * Get the list of NFTs for a given account
  */
 export interface ListNft<Addr, K, V> {
-    listNft(owner: Addr): Promise<Map<K, V>>;
+  listNft(owner: Addr): Promise<Map<K, V>>
 }
 /**
  * Get the original data of a locked NFT (uri, name, etc)
  */
 export interface GetLockedNft<Ident, Info> {
-    getLockedNft(ident: Ident): Promise<Info | undefined>;
+  getLockedNft(ident: Ident): Promise<Info | undefined>
 }
 export declare type WrappedNft = {
-    chain_nonce: number;
-    data: Uint8Array;
-};
+  chain_nonce: number
+  data: Uint8Array
+}
 export interface DecodeWrappedNft<Data> {
-    decodeWrappedNft(raw_data: Data): WrappedNft;
+  decodeWrappedNft(raw_data: Data): WrappedNft
 }
 export interface DecodeRawNft {
-    decodeUrlFromRaw(data: Uint8Array): Promise<string>;
+  decodeUrlFromRaw(data: Uint8Array): Promise<string>
 }
-export declare function ConcurrentSendError(): Error;
+export declare function ConcurrentSendError(): Error
