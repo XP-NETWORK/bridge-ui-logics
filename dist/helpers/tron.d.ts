@@ -31,4 +31,4 @@ export declare type TronHelper = BaseTronHelper & WrappedBalanceCheck<string, Bi
     nftUri(info: EthNftInfo): Promise<string>;
 };
 export declare function baseTronHelperFactory(provider: TronWeb): Promise<BaseTronHelper>;
-export declare function tronHelperFactory(provider: TronWeb, middleware_uri: string, erc1155_addr: string, minter_addr: string, minter_abi: JSON): Promise<TronHelper>;
+export declare function tronHelperFactory(provider: TronWeb, middleware_uri: string, erc1155_addr: string, minter_addr: string): Promise<TronHelper>;
