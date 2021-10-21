@@ -3,10 +3,12 @@
  * @module
  */
 import BigNumber from "bignumber.js";
-import { TransferForeign, UnfreezeForeign, UnfreezeForeignNft, BalanceCheck, TransferNftForeign, WrappedBalanceCheck, BatchWrappedBalanceCheck, DecodeWrappedNft, DecodeRawNft, MintNft } from "./chain";
+import { TransferForeign, UnfreezeForeign, UnfreezeForeignNft, BalanceCheck, TransferNftForeign, WrappedBalanceCheck, BatchWrappedBalanceCheck, DecodeWrappedNft, DecodeRawNft, MintNft, WrappedNftCheck } from "./chain";
 import { Signer, BigNumber as EthBN } from "ethers";
 import { TransactionReceipt, Provider } from "@ethersproject/providers";
+import { Interface } from "ethers/lib/utils";
 import { EstimateTxFees } from "..";
+import { NftMintArgs } from "../factory/crossChainHelper";
 declare type EasyBalance = string | number | EthBN;
 /**
  * Information required to perform NFT transfers in this chain
@@ -38,7 +40,7 @@ export declare type BaseWeb3Helper = BalanceCheck<string, BigNumber> &
  * @argument signer  owner of the smart contract
  * @argument args  See [[MintArgs]]
  */
-MintNft<Signer, MintArgs, void> & {
+MintNft<Signer, NftMintArgs, void> & {
     /**
      *
      * Deploy an ERC721 smart contract
@@ -56,7 +58,7 @@ export declare type Web3Helper = BaseWeb3Helper & WrappedBalanceCheck<string, Bi
      * Get the uri of an nft given nft info
      */
     nftUri(info: EthNftInfo): Promise<string>;
-};
+} & WrappedNftCheck<MintArgs>;
 /**
  * Create an object implementing minimal utilities for a web3 chain
  *
@@ -70,5 +72,12 @@ export declare function baseWeb3HelperFactory(provider: Provider): Promise<BaseW
  * @param minter_addr  Address of the minter smart contract
  * @param minter_abi  ABI of the minter smart contract
  */
-export declare function web3HelperFactory(provider: Provider, minter_addr: string, erc1155_addr: string): Promise<Web3Helper>;
+export interface Web3Params {
+    provider: Provider;
+    minter_addr: string;
+    minter_abi: Interface;
+    erc1155_addr: string;
+    erc721_addr: string;
+}
+export declare function web3HelperFactory(params: Web3Params): Promise<Web3Helper>;
 export {};
