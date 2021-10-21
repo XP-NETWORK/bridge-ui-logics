@@ -19,10 +19,10 @@ var RpcUri;
 })(RpcUri = exports.RpcUri || (exports.RpcUri = {}));
 var Chain;
 (function (Chain) {
-    Chain[Chain["HECO"] = 2] = "HECO";
-    Chain[Chain["BSC"] = 3] = "BSC";
-    Chain[Chain["AVALANCE"] = 4] = "AVALANCE";
-    Chain[Chain["POLYGON"] = 6] = "POLYGON";
+    Chain[Chain["HECO"] = 3] = "HECO";
+    Chain[Chain["BSC"] = 4] = "BSC";
+    Chain[Chain["AVALANCE"] = 6] = "AVALANCE";
+    Chain[Chain["POLYGON"] = 7] = "POLYGON";
     Chain[Chain["FANTOM"] = 8] = "FANTOM";
     Chain[Chain["TRON"] = 9] = "TRON";
     Chain[Chain["CELO"] = 11] = "CELO";
